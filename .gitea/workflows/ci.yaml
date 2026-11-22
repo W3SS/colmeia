@@ -1,0 +1,33 @@
+name: Rust checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Type check
+        run: cargo check --all-targets
+      - name: Test
+        run: cargo test --all-targets
+      - name: Release build
+        run: cargo build --release
+
+  web-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Smoke test da Web GUI
+        run: node web/smoke-test.mjs
+      - name: Servir e conferir HTTP 200
+        run: |
+          node scripts/dev-server.mjs --root web --port 7420 &
+          sleep 1
+          curl -fsS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:7420/ | grep -q 200

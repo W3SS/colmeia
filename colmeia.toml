@@ -1,0 +1,25 @@
+[tier]
+profile = "t2"                  # t1 | t2 | t3 — presets de governor/workers
+workers = 2
+memory_soft_mb = 600
+memory_hard_mb = 900
+git_child_cap_mb = 256
+
+[registry]
+worktree_lru_size = 30          # worktrees completos mantidos; resto = mirror
+hot_watch_count = 100           # inotify apenas no subconjunto hot
+
+[slice]
+max_lines_per_slice = 400
+group_by = ["symbol", "test_pairing", "manifest_lockfile"]
+verify_hook = "gate"
+refuse_merge_commits = true
+
+[security]
+osv_ecosystems = ["PyPI", "npm", "crates.io"]
+osv_sync_cron = "0 3 * * *"
+rule_packs = ["core", "secrets", "skills-owasp-llm", "python", "js"]
+gate_block_severity = "high"
+
+[forge]
+github_token_env = "GITHUB_TOKEN"

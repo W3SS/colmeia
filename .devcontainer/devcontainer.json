@@ -1,0 +1,28 @@
+{
+  "name": "Colmeia App Dev Environment",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "colmeia-dev",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "vadimcn.vscode-lldb",
+        "eamodio.gitlens",
+        "mutdmour.empty-indent"
+      ],
+      "settings": {
+        "lldb.executable": "/usr/bin/lldb",
+        "files.watcherExclude": {
+          "**/target/**": true,
+          "**/.git/**": true
+        },
+        "rust-analyzer.checkOnSave.command": "clippy"
+      }
+    }
+  },
+  "forwardPorts": [7420],
+  "remoteUser": "developer"
+}

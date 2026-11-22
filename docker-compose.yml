@@ -1,0 +1,73 @@
+services:
+  # ----------------------------------------------------------------------------
+  # Ambiente Principal de Desenvolvimento & TDD
+  # ----------------------------------------------------------------------------
+  colmeia-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: colmeia-dev
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:cached
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    ports:
+      - "7420:7420"
+    environment:
+      - RUST_BACKTRACE=1
+      - COLMEIA_TIER=t2
+    # Mantém o container ativo para trabalho interativo e sessões do VS Code / IDE
+    command: sleep infinity
+    # Limite de memória para simular o Tier T2 (computador modesto/batata)
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          memory: 512M
+
+  # ----------------------------------------------------------------------------
+  # Validação Automatizada de Testes (TDD Runner)
+  # ----------------------------------------------------------------------------
+  colmeia-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: colmeia-test
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:cached
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    environment:
+      - RUST_BACKTRACE=1
+      - COLMEIA_TIER=t2
+    command: cargo test -- --nocapture
+
+  # ----------------------------------------------------------------------------
+  # Execução Interativa da TUI (Ratatui)
+  # ----------------------------------------------------------------------------
+  colmeia-tui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: colmeia-tui
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/workspace:cached
+      - cargo-cache:/usr/local/cargo/registry
+      - cargo-git:/usr/local/cargo/git
+      - target-cache:/workspace/target
+    environment:
+      - RUST_BACKTRACE=1
+    command: cargo run -- tui
+
+volumes:
+  cargo-cache:
+  cargo-git:
+  target-cache:
