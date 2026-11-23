@@ -5,6 +5,14 @@ use colmeia::hooks::{self, HookStatus};
 use std::path::Path;
 use std::time::Duration;
 
+/// Serializa os testes: PATH é global por processo e testes paralelos que
+/// isolam o PATH trocam o ambiente um do outro (sleep/sh somem → exit 127).
+static ENV_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+fn env_lock() -> std::sync::MutexGuard<'static, ()> {
+    ENV_LOCK.lock().unwrap()
+}
+
 fn repo_tmp() -> tempfile::TempDir {
     let dir = tempfile::tempdir().unwrap();
     let git = Git::new(64);
@@ -22,6 +30,7 @@ fn repo_tmp() -> tempfile::TempDir {
 
 #[test]
 fn hooks_instala_dois_scripts_executaveis() {
+    let _env = env_lock();
     let repo = repo_tmp();
     let installed = hooks::install(repo.path()).unwrap();
     assert_eq!(installed.len(), 2);
@@ -37,6 +46,7 @@ fn hooks_instala_dois_scripts_executaveis() {
 
 #[test]
 fn hook_executa_sem_colmeia_no_path() {
+    let _env = env_lock();
     // sem `colmeia` no PATH o hook deve passar (Ok) e apenas avisar.
     // O PATH isolado contém só `sh` (symlink) para o spawn funcionar.
     let repo = repo_tmp();
@@ -58,6 +68,7 @@ fn hook_executa_sem_colmeia_no_path() {
 
 #[test]
 fn hook_missing_quando_script_nao_existe() {
+    let _env = env_lock();
     let repo = repo_tmp();
     let r = hooks::run_hook(repo.path(), "pre-push", Duration::from_secs(5)).unwrap();
     assert_eq!(r.status, HookStatus::Missing);
@@ -65,6 +76,7 @@ fn hook_missing_quando_script_nao_existe() {
 
 #[test]
 fn hook_timeout() {
+    let _env = env_lock();
     let repo = repo_tmp();
     hooks::install(repo.path()).unwrap();
     // substitui o script por um sleep longo para exercitar o timeout

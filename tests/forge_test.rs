@@ -1,5 +1,7 @@
 //! F32/F34 — Testes de integração dos adaptadores de forge com servidor local.
 
+
+#![cfg(unix)] // hook de execução usa script shell: Unix-only
 use colmeia::forge::{ForgeAdapter, ForgeError, GitHubAdapter, GitLabLikeAdapter};
 use colmeia::store::Store;
 use std::io::{Read, Write};
