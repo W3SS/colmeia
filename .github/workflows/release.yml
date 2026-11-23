@@ -47,7 +47,7 @@ jobs:
           grep -q '"alpha"' /tmp/tree-root.json
           curl -sf "http://127.0.0.1:7199/api/tree?path=projects" | grep -q '"demo"'
           curl -sf "http://127.0.0.1:7199/api/repo?path=alpha" | grep -q '"ok":true'
-          test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:7199/api/repo?path=..')" = "400"
+          test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:7199/api/repo?path=..')" = "403"
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST 'http://127.0.0.1:7199/api/tree')" = "405"
 
   build:
