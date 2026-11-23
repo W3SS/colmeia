@@ -1,5 +1,7 @@
 //! F25 — Testes de integração dos hooks git locais.
 
+
+#![cfg(unix)] // hooks git são scripts shell: Unix-only
 use colmeia::git::Git;
 use colmeia::hooks::{self, HookStatus};
 use std::path::Path;
