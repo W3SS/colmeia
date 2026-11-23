@@ -25,7 +25,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 2 | p02 | Rail ativo em pílula de acento | `.rail button.on` com bg de acento 30% + anel + glow | ✅ feito 2026-11-23 |
 | 3 | p03 | Tipografia: antialiased + optimizeLegibility + títulos de card com peso/tracking | computed styles conferem | ✅ feito 2026-11-23 |
 | 4 | p04 | Tabelas sem borda na última linha; foco de inputs com anel de acento; toast elevado | CSS aplicado; smoke OK | ✅ feito 2026-11-23 |
-| 5 | p05 | KPI cards: número com gradiente sutil de acento + separador lateral com glow | `.kpi .num` e `::after` refinados | pendente |
+| 5 | p05 | KPI cards: número com gradiente sutil de acento + separador lateral com glow | `.kpi .num` e `::after` refinados | ✅ feito 2026-11-23 |
 | 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | pendente |
 | 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | pendente |
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | pendente |
@@ -42,3 +42,8 @@ generoso, tipografia limpa, micro-interações discretas).
 - **2026-11-23 — rodada manual (agente)**: p01–p04 implementados; smoke 58/58;
   verificação via DOM no navegador embutido (raio 14px confirmado após fix do
   fallback `--r` em `applyThemeVars`, que resetava para 12).
+- **2026-11-23 05:2x — loop (cron)**: p05 implementado — `.kpi .num` com gradiente
+  sutil `--tx`→`--kc` via `background-clip:text`; `::after` com gradiente vertical
+  fade nas pontas + glow `box-shadow` escalado por `--glow` (14px×0.6=8.4px
+  confirmado) e hover 3px→4px com transição em `--micro`. Smoke 58/58 (100% OK);
+  verificação visual no navegador embutido (screenshot + computed styles).
