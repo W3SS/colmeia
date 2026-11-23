@@ -75,7 +75,21 @@ async function listLevel(absDir) {
   let files = 0;
   for (const e of entries) {
     if (SKIP.has(e.name) || e.name.startsWith(".")) continue;
-    if (!e.isDirectory()) { files++; continue; }
+    // symlinks (ex.: projects/colmeia-app → ../colmeia) são resolvidos.
+    // Não confiamos em Dirent.isSymbolicLink(): mounts que reportam
+    // DT_UNKNOWN (ex.: mounts de rede) fazem d_type falhar; stat() segue
+    // o symlink e decide pelo destino.
+    if (!e.isDirectory()) {
+      try {
+        if ((await stat(join(absDir, e.name))).isDirectory()) {
+          if (await isGitRepo(join(absDir, e.name))) repos.push(e.name);
+          else dirs.push(e.name);
+          continue;
+        }
+      } catch { /* symlink quebrado: ignora */ }
+      files++;
+      continue;
+    }
     if (await isGitRepo(join(absDir, e.name))) repos.push(e.name);
     else dirs.push(e.name);
   }
