@@ -31,7 +31,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | ✅ feito 2026-11-23 |
 | 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | ✅ feito 2026-11-23 |
 | 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | ✅ feito 2026-11-23 |
-| 11 | p11 | Tema claro: sombras ainda mais suaves + bordas com contraste refinado | audit visual no claro | pendente |
+| 11 | p11 | Tema claro: sombras ainda mais suaves + bordas com contraste refinado | audit visual no claro | ✅ feito 2026-11-23 |
 | 12 | p12 | Foco visível global consistente (anel de acento 3px em todos os interativos) | tab navigation confere | pendente |
 | 13 | p13 | Responsividade mobile: bottom nav ou rail compacto com labels; cards em 1 coluna | 375px conferido | pendente |
 | 14 | p14 | Motion design: easing `cubic-bezier(.2,.8,.2,1)` nas transições principais; respeito a prefers-reduced-motion | transições suaves | pendente |
@@ -100,3 +100,15 @@ generoso, tipografia limpa, micro-interações discretas).
   no card — substituem empty state enquanto carrega. Smoke 57/57 (100% OK);
   computed styles no navegador embutido (bg 13% mu, radius 6.3px = `--r`×.45,
   anim `sheen` 1.7s, `--motion:0`→0s, 18 skels na overview / 42 em repos).
+- **2026-11-23 11:2x — loop (cron)**: p11 implementado — `[data-theme="claro"]`
+  com `--shadow-card` em 3 camadas mais suaves e difusas (.04/.05/.06, blur até
+  44px) e `--bd` refinado `#E4E7F0`→`#D9DEEA` (mais definição de card sem
+  pesar); `THEME_DEFS.claro` ganha `elev` próprio (0 1px 2px .06 + 0 4px 12px
+  .06) e `applyThemeVars` passa a honrar `d.elev` opcional (padrão inalterado
+  para os demais temas). Novo token `--flot` por tema (escuro .32 / claro
+  rgba(23,26,38,.14) / sépia .18 / neumorph .2) substitui as sombras pretas
+  hardcoded de npanel, studio, drawer, palette e rail — flutuantes no claro
+  agora projetam sombra azul-acinzentada suave em vez de preto 28–42%. Smoke
+  57/57 (100% OK); computed styles + screenshot no navegador embutido no tema
+  claro (cardShadow 3 camadas, cardBorder rgb(217,222,234), drawer/rail com
+  --flot) e regressão do escuro conferida (tokens inalterados).
