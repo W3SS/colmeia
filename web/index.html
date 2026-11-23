@@ -360,17 +360,25 @@ canvas{display:block;width:100%;height:100%}
 /* drawer / modal / toast / palette */
 .drawer{position:fixed;top:56px;right:0;bottom:0;width:min(420px,100vw);z-index:20;
   background:var(--sf);border-left:var(--border-w) solid var(--bd);box-shadow:-12px 0 40px rgba(0,0,0,.3);
-  transform:translateX(102%);transition:transform var(--base) var(--ease);overflow-y:auto;padding:18px}
-.drawer.open{transform:none}
+  transform:translateX(102%);opacity:0;visibility:hidden;
+  transition:transform var(--enter) var(--ease),opacity var(--enter) var(--ease),visibility 0s var(--enter);
+  overflow-y:auto;padding:18px}
+.drawer.open{transform:none;opacity:1;visibility:visible;transition-delay:0s}
 .drawer .dh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .drawer .dh h2{font-size:1.05rem;flex:1;word-break:break-all}
-.scrim{position:fixed;inset:0;background:var(--scrim);z-index:19;opacity:0;pointer-events:none;transition:opacity var(--base)}
-.scrim.show{opacity:1;pointer-events:auto}
-.modal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:16px}
-.modal.open{display:flex}
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:19;opacity:0;pointer-events:none;
+  backdrop-filter:blur(0px);
+  transition:opacity var(--enter) var(--ease),backdrop-filter var(--enter) var(--ease)}
+.scrim.show{opacity:1;pointer-events:auto;backdrop-filter:blur(8px)}
+.modal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:var(--scrim);opacity:0;visibility:hidden;pointer-events:none;backdrop-filter:blur(0px);
+  transition:opacity var(--enter) var(--ease),backdrop-filter var(--enter) var(--ease),visibility 0s var(--enter)}
+.modal.open{opacity:1;visibility:visible;pointer-events:auto;backdrop-filter:blur(6px);transition-delay:0s}
 .modal .box{width:min(520px,100%);max-height:86vh;overflow-y:auto;background:var(--sf);
   border:var(--border-w) solid var(--bd);border-radius:var(--r);box-shadow:var(--elev),var(--shadow-a);
-  padding:20px;animation:mod-in var(--base) var(--ease-out)}
+  padding:20px;opacity:0;transform:translateY(14px) scale(.98);
+  transition:transform var(--enter) var(--ease-out),opacity var(--enter) var(--ease)}
+.modal.open .box{opacity:1;transform:none}
 @keyframes mod-in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
 .modal h2{font-size:1.05rem;margin-bottom:12px}
 .modal .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
@@ -387,7 +395,7 @@ canvas{display:block;width:100%;height:100%}
 .palette{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px}
 .palette.open{display:flex}
 .palette .pbox{width:min(560px,100%);background:var(--sf);border:var(--border-w) solid var(--bd);
-  border-radius:14px;box-shadow:var(--elev),0 24px 60px rgba(0,0,0,.4);overflow:hidden;animation:mod-in var(--base)}
+  border-radius:14px;box-shadow:var(--elev),0 24px 60px rgba(0,0,0,.4);overflow:hidden;animation:mod-in var(--enter) var(--ease-out)}
 .palette input{border:none;border-radius:0;border-bottom:var(--border-w) solid var(--bd);padding:14px 16px;font-size:.95rem;background:var(--sf)}
 .palette .plist{max-height:320px;overflow-y:auto;padding:6px}
 .palette .pitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:.86rem;cursor:pointer}
