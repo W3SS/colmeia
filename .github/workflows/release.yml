@@ -21,9 +21,27 @@ jobs:
         run: cargo test --locked
       - name: Smoke test da Web GUI
         run: node web/smoke-test.mjs
-      - name: Testes da API de exploração
-        if: runner.os != 'Windows'
-        run: node scripts/api-test.mjs
+      # api-test.mjs valida o diretório REAL de repos da máquina do
+      # desenvolvedor; no CI usamos uma fixture sintética com as mesmas
+      # garantias (listagem, repo info, read-only, anti-traversal).
+      - name: Testes da API de exploração (fixture)
+        shell: bash
+        run: |
+          FIX="$RUNNER_TEMP/colmeia-fixture"
+          mkdir -p "$FIX/repos/projects/demo"
+          git init -q "$FIX/repos/alpha"
+          git init -q "$FIX/repos/projects/demo/beta"
+          git -C "$FIX/repos/alpha" config user.email t@t
+          git -C "$FIX/repos/alpha" config user.name t
+          touch "$FIX/repos/alpha/a.txt"
+          git -C "$FIX/repos/alpha" add . && git -C "$FIX/repos/alpha" commit -q -m init
+          COLMEIA_REPOS_ROOT="$FIX/repos" node scripts/dev-server.mjs --port 7199 &
+          sleep 3
+          curl -sf "http://127.0.0.1:7199/api/tree?path=" | grep -q '"alpha"'
+          curl -sf "http://127.0.0.1:7199/api/tree?path=projects" | grep -q '"demo"'
+          curl -sf "http://127.0.0.1:7199/api/repo?path=alpha" | grep -q '"ok":true'
+          test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:7199/api/repo?path=..')" = "400"
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST 'http://127.0.0.1:7199/api/tree')" = "405"
 
   build:
     name: Build release (${{ matrix.target }})

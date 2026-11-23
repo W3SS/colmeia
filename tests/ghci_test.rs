@@ -7,7 +7,6 @@
 
 use colmeia::ghci::{self, GhCli, GhciError};
 use colmeia::store::Store;
-use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
 /// Serializa os testes que mutam variáveis de ambiente (PATH, FAKE_GH_*).
@@ -24,6 +23,11 @@ fn env_lock() -> std::sync::MutexGuard<'static, ()> {
 /// - "log"   → log de passos falhos
 /// - "fail"  → exit 1 com stderr
 /// Grava os argumentos em `$FAKE_GH_ARGS` para inspeção.
+#[cfg(unix)]
+mod unix_tests {
+use super::*;
+use std::os::unix::fs::PermissionsExt;
+
 fn fake_gh(dir: &Path) -> std::path::PathBuf {
     let script = r#"#!/bin/sh
 : > /dev/null
@@ -228,7 +232,9 @@ fn ci_scan_ordena_e_deduplica_slugs() {
     assert_eq!(logged.matches("run list").count(), 2);
 }
 
-// ── HF: cliente apontado para sink TCP local ────────────────────────────────
+} // fim mod unix_tests
+
+// ── HF: cliente apontado para sink TCP local (cross-platform) ───────────────
 
 /// Servidor HTTP mínimo que responde um chat.completion fixo e grava o
 /// corpo da requisição para assert.
