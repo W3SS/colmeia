@@ -26,7 +26,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 3 | p03 | Tipografia: antialiased + optimizeLegibility + títulos de card com peso/tracking | computed styles conferem | ✅ feito 2026-11-23 |
 | 4 | p04 | Tabelas sem borda na última linha; foco de inputs com anel de acento; toast elevado | CSS aplicado; smoke OK | ✅ feito 2026-11-23 |
 | 5 | p05 | KPI cards: número com gradiente sutil de acento + separador lateral com glow | `.kpi .num` e `::after` refinados | ✅ feito 2026-11-23 |
-| 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | pendente |
+| 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | ✅ feito 2026-11-23 |
 | 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | pendente |
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | pendente |
 | 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | pendente |
@@ -47,3 +47,12 @@ generoso, tipografia limpa, micro-interações discretas).
   fade nas pontas + glow `box-shadow` escalado por `--glow` (14px×0.6=8.4px
   confirmado) e hover 3px→4px com transição em `--micro`. Smoke 58/58 (100% OK);
   verificação visual no navegador embutido (screenshot + computed styles).
+- **2026-11-23 06:3x — loop (cron)**: p06 implementado — drawer sai de
+  `transform`-only para slide+fade em `--enter` com `visibility` atrasada via
+  `transition-delay` (fecha suave, some após a transição); `.scrim` ganha
+  `backdrop-filter: blur(0→8px)` progressivo em `--enter`; `.modal` deixa
+  `display:none` e vira overlay sempre montado (opacity+visibility+pointer-events)
+  com backdrop `var(--scrim)` + `blur(0→6px)` e `.box` com fade+slide+scale em
+  `--enter` — entrada E saída animadas sem tocar no JS; `.palette .pbox` retimado
+  para `--enter`. Smoke 58/58 (100% OK); computed styles no navegador embutido:
+  `--enter`=400ms, estados finais opacity 1 / transform none / blurs aplicados.
