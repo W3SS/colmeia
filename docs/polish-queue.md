@@ -30,7 +30,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | ✅ feito 2026-11-23 |
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | ✅ feito 2026-11-23 |
 | 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | ✅ feito 2026-11-23 |
-| 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | pendente |
+| 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | ✅ feito 2026-11-23 |
 | 11 | p11 | Tema claro: sombras ainda mais suaves + bordas com contraste refinado | audit visual no claro | pendente |
 | 12 | p12 | Foco visível global consistente (anel de acento 3px em todos os interativos) | tab navigation confere | pendente |
 | 13 | p13 | Responsividade mobile: bottom nav ou rail compacto com labels; cards em 1 coluna | 375px conferido | pendente |
@@ -89,3 +89,14 @@ generoso, tipografia limpa, micro-interações discretas).
   58/58 (100% OK); computed styles no navegador embutido (badge 64px/42px,
   anel+glow 12px com `--glow` .6, título `rgb(232,234,242)`) + screenshot do
   empty de repos.
+- **2026-11-23 10:2x — loop (cron)**: p10 implementado — componente `.skel`
+  (bg `--mu` 13% + shimmer `::after` com gradiente `transparent`→`--tx` 9% via
+  keyframe `sheen` já existente, duração `calc(1.7s*var(--motion))` — vira 0s e
+  congela com `--motion:0`/reduced-motion). `state.reposLoading` nasce `true` e
+  cai no `finally` de `realScan()` (re-render só se a tela for overview/repos).
+  Overview: 6 KPI cards esqueléticos (`.skel-num`/`.skel-lbl`/`.skel-spk`) com
+  `aria-busy` no grid; Repos: `skelRepoTable()` com 6 linhas (checkbox, nome em
+  larguras variadas, pílula de modo, branch, sync, spark, ações) e `aria-busy`
+  no card — substituem empty state enquanto carrega. Smoke 57/57 (100% OK);
+  computed styles no navegador embutido (bg 13% mu, radius 6.3px = `--r`×.45,
+  anim `sheen` 1.7s, `--motion:0`→0s, 18 skels na overview / 42 em repos).

@@ -536,6 +536,16 @@ body.nav-open{overflow:hidden}
   color:var(--mu);font:700 .68rem/1 ui-monospace,monospace;display:grid;place-items:center}
 .theme-dots .more:hover{border-color:var(--ac);color:var(--ac);transform:scale(1.2)}
 
+/* ═══════════════ SKELETON LOADING ═══════════════ */
+.skel{position:relative;overflow:hidden;border-radius:calc(var(--r)*.45);
+  background:color-mix(in srgb,var(--mu) 13%,transparent)}
+.skel::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 30%,color-mix(in srgb,var(--tx) 9%,transparent) 50%,transparent 70%);
+  background-size:220% 100%;animation:sheen calc(1.7s*var(--motion)) linear infinite}
+.kpi .skel-num{width:58%;height:30px;margin:1px 0 8px}
+.kpi .skel-lbl{width:46%;height:10px}
+.kpi .skel-spk{position:absolute;right:10px;bottom:10px;width:64px;height:26px;border-radius:7px}
+
 /* ═══════════════ GITFLOW (GitKraken-style) ═══════════════ */
 .drawer.wide{width:min(700px,100vw)}
 .gf{display:flex;align-items:flex-start;border:var(--border-w) solid var(--bd);
@@ -705,7 +715,7 @@ const emptyState=(ic,title,sub,act,mini)=>`<div class="empty${mini?" mini":""}">
 /* ═══════════════════════ ESTADO / SEED ═══════════════════════ */
 const DEFAULTS={theme:"escuro",accent:"#F59E0B",density:1,motion:1,glow:.6,nodes:312,depth:2,grid:true,font:1,contrast:false};
 const state={
-  ...DEFAULTS, screen:"overview",
+  ...DEFAULTS, screen:"overview", reposLoading:true,
   repos:[], policies:[], findings:[], jobs:[], events:[], conflicts:[], prs:[], anomalies:[], docs:[],
   selection:new Set(), repoSearch:"", repoMode:"all", repoSort:"name", repoDir:1,
   savedViews:[], sevFilter:"all", docSel:0, docSearch:"", conflictSel:0, driver:"structured",
@@ -998,14 +1008,17 @@ function screenOverview(){
     [state.findings.filter(f=>f.id.startsWith("CVE")).length,"CVEs novas","var(--d4)",[0,1,2,1,3,2,4,3]],
     [state.prs.filter(p=>p.status==="open").length,"PRs abertos","var(--d8)",[1,2,2,3,2,4,3,4]]
   ];
+  const kpiCards=state.reposLoading
+    ? Array.from({length:6},()=>`<div class="card kpi" aria-hidden="true"><div class="skel skel-num"></div><div class="skel skel-lbl"></div><span class="skel skel-spk"></span></div>`).join("")
+    : kpis.map(([n,l,c,s])=>`<div class="card kpi hoverable" style="--kc:${c}"><div class="num">${n}</div><div class="lbl">${l}</div>${sparkSVG(s,c)}</div>`).join("")
+      +`<div class="card kpi" style="--kc:var(--ok)"><div class="num" id="rssNum">${state.rss}</div><div class="lbl">RSS / soft-cap 600 MB</div>
+        <svg class="spark" width="64" height="32" viewBox="0 0 64 32"><path id="govArc" d="" fill="none" stroke="var(--ok)" stroke-width="3" stroke-linecap="round"/></svg></div>`;
   return `<div class="enter">
   <div class="page-head"><div><div class="crumb">Colmeia / Visão Geral</div><h1>Pulso da frota</h1></div>
     <div class="spacer"></div><span class="chip on">T2 · 4GB</span><span class="chip">${state.repos.length} gerenciados</span>
     ${state.realSource?`<span class="chip" style="color:var(--ok);border-color:var(--ok)" title="${esc((state.realSource.root||""))}">${icon("check",12)} diretório real</span>`:""}</div>
-  <div class="grid kpis stagger" style="margin-bottom:12px">
-    ${kpis.map(([n,l,c,s])=>`<div class="card kpi hoverable" style="--kc:${c}"><div class="num">${n}</div><div class="lbl">${l}</div>${sparkSVG(s,c)}</div>`).join("")}
-    <div class="card kpi" style="--kc:var(--ok)"><div class="num" id="rssNum">${state.rss}</div><div class="lbl">RSS / soft-cap 600 MB</div>
-      <svg class="spark" width="64" height="32" viewBox="0 0 64 32"><path id="govArc" d="" fill="none" stroke="var(--ok)" stroke-width="3" stroke-linecap="round"/></svg></div>
+  <div class="grid kpis stagger" style="margin-bottom:12px" ${state.reposLoading?'aria-busy="true"':""}>
+    ${kpiCards}
   </div>
   <div class="grid cols-2">
     <div class="card"><h3>${icon("graph")} Mapa da frota <span class="sub">culling ON</span></h3>
@@ -1046,6 +1059,18 @@ function filteredRepos(){
     return (va<vb?-1:va>vb?1:0)*state.repoDir});
   return r;
 }
+function skelRepoTable(){
+  const w=[62,48,70,55,66,58];
+  return `<table style="min-width:680px"><tbody>${w.map(n=>`<tr aria-hidden="true">
+    <td style="width:34px"><span class="skel" style="display:block;width:15px;height:15px;border-radius:4px"></span></td>
+    <td><span class="skel" style="display:block;width:${n}%;max-width:230px;height:12px"></span></td>
+    <td><span class="skel" style="display:block;width:58px;height:19px;border-radius:99px"></span></td>
+    <td><span class="skel" style="display:block;width:44px;height:10px"></span></td>
+    <td><span class="skel" style="display:block;width:36px;height:10px"></span></td>
+    <td><span class="skel" style="display:block;width:64px;height:24px;border-radius:6px"></span></td>
+    <td style="width:120px"><span class="skel" style="display:block;width:88px;height:22px;margin-left:auto;border-radius:8px"></span></td>
+  </tr>`).join("")}</tbody></table>`;
+}
 function screenRepos(){
   const rows=filteredRepos();
   const modes=["all","managed","mirror","dormant"];
@@ -1066,8 +1091,9 @@ function screenRepos(){
     <button class="btn sm" data-act="bulk-archive">${icon("box",13)} Arquivar</button>
     <button class="btn sm danger" data-act="bulk-delete">${icon("trash",13)} Excluir</button>
     <button class="btn sm ghost" data-act="clear-sel">Limpar</button></div>`:""}
-  <div class="card" style="padding:0;overflow-x:auto">
-  ${rows.length?`<table style="min-width:680px"><thead><tr>
+  <div class="card" style="padding:0;overflow-x:auto" ${state.reposLoading?'aria-busy="true"':""}>
+  ${state.reposLoading?skelRepoTable()
+  :rows.length?`<table style="min-width:680px"><thead><tr>
     <th style="width:34px"><input type="checkbox" data-inp="sel-all" ${rows.every(r=>state.selection.has(r.id))?"checked":""} style="width:auto"></th>
     <th data-act="sort" data-k="name">Repositório ${state.repoSort==="name"?(state.repoDir>0?"↑":"↓"):""}</th>
     <th data-act="sort" data-k="mode">Modo ${state.repoSort==="mode"?(state.repoDir>0?"↑":"↓"):""}</th>
@@ -1687,13 +1713,18 @@ function applyRealFleet(scan){
   syncBranchRepos();rebuildFleetGraph();persistRealCache();persist();
 }
 async function realScan(){
-  let scan;
-  try{const r=await fetch("/api/scan",{cache:"no-store"});if(!r.ok)return;scan=await r.json()}catch(e){return}
-  if(!scan.ok||!scan.repos||!scan.repos.length)return;
-  const first=!state.realSource;
-  applyRealFleet(scan);render();
-  if(first)toast("Frota sincronizada com o diretório real ("+scan.repos.length+" repos).");
-  enrichRealRepos();
+  try{
+    let scan;
+    try{const r=await fetch("/api/scan",{cache:"no-store"});if(!r.ok)return;scan=await r.json()}catch(e){return}
+    if(!scan.ok||!scan.repos||!scan.repos.length)return;
+    const first=!state.realSource;
+    applyRealFleet(scan);render();
+    if(first)toast("Frota sincronizada com o diretório real ("+scan.repos.length+" repos).");
+    enrichRealRepos();
+  }finally{
+    if(state.reposLoading){state.reposLoading=false;
+      if(state.screen==="overview"||state.screen==="repos")render()}
+  }
 }
 async function enrichRealRepos(){
   const screens=["overview","repos","explorar","graph","branches"];
