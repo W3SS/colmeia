@@ -35,9 +35,16 @@ jobs:
           git -C "$FIX/repos/alpha" config user.name t
           touch "$FIX/repos/alpha/a.txt"
           git -C "$FIX/repos/alpha" add . && git -C "$FIX/repos/alpha" commit -q -m init
+          node --version; curl --version | head -1
           COLMEIA_REPOS_ROOT="$FIX/repos" node scripts/dev-server.mjs --port 7199 &
-          sleep 3
-          curl -sf "http://127.0.0.1:7199/api/tree?path=" | grep -q '"alpha"'
+          # Espera ativa (runners podem demorar mais que 3s para o node responder)
+          for i in $(seq 1 30); do
+            if curl -sf "http://127.0.0.1:7199/api/tree?path=" > /tmp/tree-root.json 2>/tmp/curl-err; then break; fi
+            sleep 1
+          done
+          echo "--- resposta /api/tree?path=:"; cat /tmp/tree-root.json || true
+          echo; echo "--- erro curl (se houver):"; cat /tmp/curl-err || true; echo
+          grep -q '"alpha"' /tmp/tree-root.json
           curl -sf "http://127.0.0.1:7199/api/tree?path=projects" | grep -q '"demo"'
           curl -sf "http://127.0.0.1:7199/api/repo?path=alpha" | grep -q '"ok":true'
           test "$(curl -s -o /dev/null -w '%{http_code}' 'http://127.0.0.1:7199/api/repo?path=..')" = "400"

@@ -441,3 +441,42 @@ Providers e padrões de outros repositórios de automação de CI.
   anti-recursão — apoiado em `webhooks.rs`/`hooks_out.rs` existentes),
   padrões de outros repos (extrato de log, flaky vs real, plano-antes-agar),
   roadmap event-driven.
+
+## 2026-11-23 — Release multi-plataforma + loop de polimento premium (8h)
+
+### Release builds (macOS, Windows, Linux)
+- `.github/workflows/release.yml`: validação (testes Rust + smoke web + API
+  contra fixture sintética) em 3 SOs; build release em 4 alvos
+  (macOS x86_64/arm64, Windows x86_64, Linux x86_64); GitHub Release com
+  os pacotes ao publicar tag `v*`. Disparo manual via `workflow_dispatch`.
+- macOS local: `dist/colmeia-macos-arm64` (4,8 MB) buildado e validado
+  (`--help`/`--version` executam; mount não permite exec — testado via /tmp).
+- Portabilidade dos testes: `ghci_test` isolado em `cfg(unix)`; mesma
+  serialização de PATH (ENV_LOCK) aplicada em `hooks_test` (corrida de PATH
+  entre testes paralelos quebrava `sleep` no CI → exit 127); `forge_test` e
+  `hooks_test` unix-only (scripts shell); `repos_dir_test` faz skip
+  gracioso fora da máquina dev (exige o diretório real de repos).
+
+### Polimento premium do dashboard (referência: imagem do usuário)
+- p01: sombras em camadas por tema (`--shadow-card`) + raio 14px
+  (fix: `applyThemeVars` resetava `--r` para 12 via fallback).
+- p02: item ativo do rail em pílula de acento (bg 30% + anel + glow).
+- p03: `-webkit-font-smoothing:antialiased` + `text-rendering:
+  optimizeLegibility` + títulos de card com peso/tracking refinados.
+- p04: tabela sem borda na última linha; foco de inputs/selects com anel
+  de acento; toast elevado.
+- Verificação via DOM no navegador embutido (raio, sombras e rail ativo
+  confirmados por computed styles).
+- Fila completa em `docs/polish-queue.md` (p05–p15) com critérios de aceite,
+  regras do loop e log de iterações.
+
+### Loop de polimento 8h (automação)
+- `automation_0862abff`: cron `23 * * * *` (America/Sao_Paulo), modelo
+  k3-agent, execução no workspace colmeia, timeout 45 min/run.
+  Cada run: pega o próximo item da fila, implementa, valida, commita,
+  envia e se auto-desativa após 8h ou ao esgotar a fila.
+  Nota: cada execução consuma créditos de conversação (aviso dado ao dono).
+
+### Testes
+- Local: web 58/58, API 27/27, hooks 4/4, ghci 11/11, forge 4/4,
+  repos_dir 4/4. CI: acompanhado em 3 rodadas até ficar verde nos 3 SOs.
