@@ -27,7 +27,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 4 | p04 | Tabelas sem borda na última linha; foco de inputs com anel de acento; toast elevado | CSS aplicado; smoke OK | ✅ feito 2026-11-23 |
 | 5 | p05 | KPI cards: número com gradiente sutil de acento + separador lateral com glow | `.kpi .num` e `::after` refinados | ✅ feito 2026-11-23 |
 | 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | ✅ feito 2026-11-23 |
-| 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | pendente |
+| 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | ✅ feito 2026-11-23 |
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | pendente |
 | 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | pendente |
 | 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | pendente |
@@ -56,3 +56,12 @@ generoso, tipografia limpa, micro-interações discretas).
   `--enter` — entrada E saída animadas sem tocar no JS; `.palette .pbox` retimado
   para `--enter`. Smoke 58/58 (100% OK); computed styles no navegador embutido:
   `--enter`=400ms, estados finais opacity 1 / transform none / blurs aplicados.
+- **2026-11-23 07:2x — loop (cron)**: p07 implementado — `.chip.on` sobe de
+  acento 16%→20% no bg, ganha anel inset de acento 30% + glow externo
+  `0 0 calc(12px*--glow)` a 25%, e o contador `.n` fica em acento com
+  opacidade .95; `button.chip` ganha hover (borda acento 45% + texto `--tx`);
+  transição do chip retimada de `all` para propriedades explícitas em
+  `--micro`/`--ease`. Bug evitado: `box-shadow: var(--shadow-b), …` invalida a
+  lista inteira quando `--shadow-b:none` (tema escuro) — substituído por anel
+  inset. Smoke 58/58 (100% OK); computed styles + screenshot no navegador
+  embutido (bg = mix exato 20% `--ac`×`--ov`, borda = `--ac`, anel+glow ok).

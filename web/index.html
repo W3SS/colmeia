@@ -229,8 +229,12 @@ body.studio-open .studio{transform:none}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:var(--border-w) solid var(--bd);background:var(--ov);border-radius:99px;
   padding:4px 12px;font-size:.76rem;font-weight:700;color:var(--mu);box-shadow:var(--shadow-b);
-  transition:all var(--micro)}
-.chip.on{color:var(--tx);border-color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,var(--ov))}
+  transition:border-color var(--micro) var(--ease),background var(--micro) var(--ease),color var(--micro) var(--ease),box-shadow var(--micro) var(--ease)}
+button.chip:hover{border-color:color-mix(in srgb,var(--ac) 45%,var(--bd));color:var(--tx)}
+.chip.on{color:var(--tx);border-color:var(--ac);
+  background:color-mix(in srgb,var(--ac) 20%,var(--ov));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ac) 30%,transparent),0 0 calc(12px*var(--glow)) color-mix(in srgb,var(--ac) 25%,transparent)}
+.chip.on .n{opacity:.95;color:var(--ac)}
 .chip .n{opacity:.7;margin-left:4px}
 table{width:100%;border-collapse:collapse;font-size:.84rem}
 th{font:700 .68rem ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em;
