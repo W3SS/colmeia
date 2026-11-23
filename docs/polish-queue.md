@@ -28,7 +28,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 5 | p05 | KPI cards: número com gradiente sutil de acento + separador lateral com glow | `.kpi .num` e `::after` refinados | ✅ feito 2026-11-23 |
 | 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | ✅ feito 2026-11-23 |
 | 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | ✅ feito 2026-11-23 |
-| 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | pendente |
+| 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | ✅ feito 2026-11-23 |
 | 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | pendente |
 | 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | pendente |
 | 11 | p11 | Tema claro: sombras ainda mais suaves + bordas com contraste refinado | audit visual no claro | pendente |
@@ -65,3 +65,14 @@ generoso, tipografia limpa, micro-interações discretas).
   lista inteira quando `--shadow-b:none` (tema escuro) — substituído por anel
   inset. Smoke 58/58 (100% OK); computed styles + screenshot no navegador
   embutido (bg = mix exato 20% `--ac`×`--ov`, borda = `--ac`, anel+glow ok).
+- **2026-11-23 08:2x — loop (cron)**: p08 implementado — `.searchbtn` premium:
+  hover com borda acento 55% + anel inset 25% + glow `0 0 calc(14px*--glow)`
+  (sem combinar com `--shadow-b`, que é `none` no escuro), ícone fica `--ac` no
+  hover, `:active` com `scale(.985)`; `kbd ⌘K` vira keycap físico (gradiente
+  `--sf`→`--bg`, luz superior inset 9%, sombra 1px 2px, tracking .05em).
+  `.gov-pill` ganha `--dc` (`--ok`→`--wa` em `.warn`) e dot "radar": glow
+  escalado por `--glow` + anel `::after` `govping` (scale .55→1.7 + fade) em
+  `calc(2.2s*--motion)` — desliga com `--motion:0`/reduced-motion. Smoke 58/58
+  (100% OK); computed styles + screenshot no navegador embutido (ring animando,
+  dot âmbar em warn 508/600 MB; kbd oculto <900px pela regra mobile já
+  existente, estilos confirmados via computed).
