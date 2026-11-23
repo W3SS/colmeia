@@ -29,7 +29,7 @@ generoso, tipografia limpa, micro-interações discretas).
 | 6 | p06 | Drawer/modal: entrada com fade+slide suave; backdrop com blur progressivo | transições em `--enter`; backdrop-filter | ✅ feito 2026-11-23 |
 | 7 | p07 | Chips/filtros com estado ativo mais legível (bg acento 20% + borda acento) | `.chip.on` aplicado em todas as telas | ✅ feito 2026-11-23 |
 | 8 | p08 | Header: busca com ícone + placeholder de atalho (⌘K) estilo premium; pill do governor com dot pulsante | visual consistente | ✅ feito 2026-11-23 |
-| 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | pendente |
+| 9 | p09 | Empty states: ilustração/ícone grande + ação primária quando lista vazia (repos, PRs, docs) | telas sem dados mostram empty state | ✅ feito 2026-11-23 |
 | 10 | p10 | Skeleton loading: shimmer discreto nos cards enquanto `state.repos` carrega | shimmer via gradiente animado, respeita `--motion:0` | pendente |
 | 11 | p11 | Tema claro: sombras ainda mais suaves + bordas com contraste refinado | audit visual no claro | pendente |
 | 12 | p12 | Foco visível global consistente (anel de acento 3px em todos os interativos) | tab navigation confere | pendente |
@@ -76,3 +76,16 @@ generoso, tipografia limpa, micro-interações discretas).
   (100% OK); computed styles + screenshot no navegador embutido (ring animando,
   dot âmbar em warn 508/600 MB; kbd oculto <900px pela regra mobile já
   existente, estilos confirmados via computed).
+- **2026-11-23 09:2x — loop (cron)**: p09 implementado — componente `.empty`
+  premium: badge circular `.eico` (64px; bg acento 10% × `--sf`, anel inset de
+  acento 24%, glow `0 0 calc(20px*--glow)` a 16% — mesmo padrão seguro de
+  p07/p08, sem combinar com `--shadow-b`), título em `--tx` com tracking
+  -.01em, subtexto `.8rem` até 360px, variante `.mini` (42px) para contextos
+  estreitos; helper JS `emptyState(ic,título,sub,ação,mini)` unifica markup.
+  PRs ganha empty state com ação primária "PR agendado" (tabela só renderiza
+  com itens); Docs: árvore e leitor com empty + botão "Limpar busca" (novo
+  case `clear-doc-search`) e doc cards com mini empty; migrados repos,
+  security, drawer (findings/docs), palette e Explorar para o helper. Smoke
+  58/58 (100% OK); computed styles no navegador embutido (badge 64px/42px,
+  anel+glow 12px com `--glow` .6, título `rgb(232,234,242)`) + screenshot do
+  empty de repos.
